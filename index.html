@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Explorer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+        }
+        #search-container {
+            margin: 20px auto;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        #search {
+            width: 300px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #results {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .repo {
+            background: white;
+            padding: 15px;
+            width: 300px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+        .repo h2 {
+            font-size: 18px;
+            margin: 0;
+        }
+        .repo a {
+            text-decoration: none;
+            color: #007bff;
+        }
+        .repo a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>GitHub Explorer</h1>
+    <div id="search-container">
+        <input type="text" id="search" placeholder="Search GitHub Repositories...">
+        <button onclick="searchRepos()">Search</button>
+    </div>
+    <div id="results"></div>
+    
+    <script>
+        async function searchRepos() {
+            const query = document.getElementById('search').value;
+            const response = await fetch(`https://api.github.com/search/repositories?q=${query}`);
+            const data = await response.json();
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+            
+            data.items.forEach(repo => {
+                const repoDiv = document.createElement('div');
+                repoDiv.className = 'repo';
+                repoDiv.innerHTML = `
+                    <h2><a href="${repo.html_url}" target="_blank">${repo.name}</a></h2>
+                    <p>${repo.description || 'No description available'}</p>
+                    <p>⭐ ${repo.stargazers_count} | 🍴 ${repo.forks_count}</p>
+                    <p>Owner: <a href="${repo.owner.html_url}" target="_blank">${repo.owner.login}</a></p>
+                `;
+                resultsDiv.appendChild(repoDiv);
+            });
+        }
+    </script>
+</body>
+</html>
